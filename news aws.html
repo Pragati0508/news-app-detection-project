@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #6dd5fa, #2980b9);
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .weather-container {
+      margin-top: 100px;
+    }
+
+    input {
+      padding: 10px;
+      width: 200px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-left: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #27ae60;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #2ecc71;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <div class="weather-container">
+    <h1>Weather Checker (My Own API)</h1>
+    <input type="text" id="location" placeholder="Enter city name">
+    <button onclick="getWeather()">Get Weather</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      const location = document.getElementById('location').value.trim();
+      const result = document.getElementById('result');
+      result.innerHTML = '';
+
+      if (!location) {
+        result.innerHTML = '<p style="color: yellow;">Please enter a city name</p>';
+        return;
+      }
+
+      // ✅ YOUR AWS API URL
+      const apiUrl = `https://i7iippmfsj.execute-api.ap-southeast-2.amazonaws.com/dev/weather?city=${location}`;
+
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error('City not found or server error');
+        }
+
+        const data = await response.json();
+
+        result.innerHTML = `
+          <h2>${data.city}</h2>
+          <p>🌡 Temperature: ${data.temperature}</p>
+          <p>Feels Like: ${data.feels_like}</p>
+          <p>💧 Humidity: ${data.humidity}</p>
+          <p>💨 Wind Speed: ${data.wind_speed}</p>
+          <p>☀️ Condition: ${data.condition} (${data.description})</p>
+          <p>🕓 ${new Date(data.date).toLocaleString()}</p>
+        `;
+      } catch (error) {
+        result.innerHTML = `<p style="color: yellow;">${error.message}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
